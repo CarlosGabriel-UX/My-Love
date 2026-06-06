@@ -20,6 +20,8 @@ export default function PhotoRoulette() {
   const reduceMotionRef = useRef(false);
   const [dragDx, setDragDx] = useState(0);
   const dragWidthRef = useRef(0);
+  const dragRafRef = useRef<number | null>(null);
+  const dragDxRef = useRef(0);
   const dragRef = useRef<{
     pointerId: number;
     x: number;
@@ -31,6 +33,8 @@ export default function PhotoRoulette() {
 
   const [modalDragDx, setModalDragDx] = useState(0);
   const modalDragWidthRef = useRef(0);
+  const modalDragRafRef = useRef<number | null>(null);
+  const modalDragDxRef = useRef(0);
   const modalDragRef = useRef<{
     pointerId: number;
     x: number;
@@ -133,12 +137,21 @@ export default function PhotoRoulette() {
       d.moved = true;
     }
     d.dx = dx;
-    setDragDx(dx);
+    dragDxRef.current = dx;
+    if (dragRafRef.current != null) return;
+    dragRafRef.current = window.requestAnimationFrame(() => {
+      dragRafRef.current = null;
+      setDragDx(dragDxRef.current);
+    });
   };
 
   const onCoverPointerUp = (goPrev: () => void, goNext: () => void) => (e: ReactPointerEvent<HTMLDivElement>) => {
     const d = dragRef.current;
     dragRef.current = null;
+    if (dragRafRef.current != null) {
+      window.cancelAnimationFrame(dragRafRef.current);
+      dragRafRef.current = null;
+    }
     setDragDx(0);
     if (!d || d.pointerId !== e.pointerId) return;
     const threshold = Math.max(56, dragWidthRef.current * 0.16);
@@ -152,6 +165,10 @@ export default function PhotoRoulette() {
   const onCoverPointerCancel = (e: ReactPointerEvent<HTMLDivElement>) => {
     const d = dragRef.current;
     dragRef.current = null;
+    if (dragRafRef.current != null) {
+      window.cancelAnimationFrame(dragRafRef.current);
+      dragRafRef.current = null;
+    }
     setDragDx(0);
     if (!d || d.pointerId !== e.pointerId) return;
     if (d.moved) setPreventClick(preventClickRef);
@@ -176,12 +193,21 @@ export default function PhotoRoulette() {
       d.moved = true;
     }
     d.dx = dx;
-    setModalDragDx(dx);
+    modalDragDxRef.current = dx;
+    if (modalDragRafRef.current != null) return;
+    modalDragRafRef.current = window.requestAnimationFrame(() => {
+      modalDragRafRef.current = null;
+      setModalDragDx(modalDragDxRef.current);
+    });
   };
 
   const onModalPointerUp = (goPrev: () => void, goNext: () => void) => (e: ReactPointerEvent<HTMLDivElement>) => {
     const d = modalDragRef.current;
     modalDragRef.current = null;
+    if (modalDragRafRef.current != null) {
+      window.cancelAnimationFrame(modalDragRafRef.current);
+      modalDragRafRef.current = null;
+    }
     setModalDragDx(0);
     if (!d || d.pointerId !== e.pointerId) return;
     const threshold = Math.max(64, modalDragWidthRef.current * 0.18);
@@ -195,6 +221,10 @@ export default function PhotoRoulette() {
   const onModalPointerCancel = (e: ReactPointerEvent<HTMLDivElement>) => {
     const d = modalDragRef.current;
     modalDragRef.current = null;
+    if (modalDragRafRef.current != null) {
+      window.cancelAnimationFrame(modalDragRafRef.current);
+      modalDragRafRef.current = null;
+    }
     setModalDragDx(0);
     if (!d || d.pointerId !== e.pointerId) return;
     if (d.moved) setPreventClick(preventModalTapRef);
@@ -301,18 +331,21 @@ export default function PhotoRoulette() {
                     );
                   })}
 
-                  <button
-                    type="button"
-                    aria-label="Voltar"
-                    onClick={prev}
-                    className="absolute inset-y-0 left-0 w-1/3"
-                  />
-                  <button
-                    type="button"
-                    aria-label="Próxima"
-                    onClick={next}
-                    className="absolute inset-y-0 right-0 w-1/3"
-                  />
+                  <div aria-hidden className="pointer-events-none absolute inset-0 grid grid-cols-3">
+                    <button
+                      type="button"
+                      aria-label="Voltar"
+                      onClick={prev}
+                      className="pointer-events-auto h-full w-full"
+                    />
+                    <div />
+                    <button
+                      type="button"
+                      aria-label="Próxima"
+                      onClick={next}
+                      className="pointer-events-auto h-full w-full"
+                    />
+                  </div>
                 </div>
 
                 <div className="pointer-events-none absolute inset-0 rounded-[2.4rem] ring-1 ring-pink-300/40" />
@@ -366,24 +399,27 @@ export default function PhotoRoulette() {
             >
               <img src={items[mod(modalIndex)]?.src ?? ""} alt="" className="h-auto w-full select-none" draggable={false} />
             </div>
-            <button
-              type="button"
-              aria-label="Voltar"
-              onClick={() => {
-                if (preventModalTapRef.current) return;
-                prevModal();
-              }}
-              className="absolute inset-y-0 left-0 w-1/3"
-            />
-            <button
-              type="button"
-              aria-label="Próxima"
-              onClick={() => {
-                if (preventModalTapRef.current) return;
-                nextModal();
-              }}
-              className="absolute inset-y-0 right-0 w-1/3"
-            />
+            <div aria-hidden className="pointer-events-none absolute inset-0 grid grid-cols-3">
+              <button
+                type="button"
+                aria-label="Voltar"
+                onClick={() => {
+                  if (preventModalTapRef.current) return;
+                  prevModal();
+                }}
+                className="pointer-events-auto h-full w-full"
+              />
+              <div />
+              <button
+                type="button"
+                aria-label="Próxima"
+                onClick={() => {
+                  if (preventModalTapRef.current) return;
+                  nextModal();
+                }}
+                className="pointer-events-auto h-full w-full"
+              />
+            </div>
           </div>
         ) : null}
       </Dialog>

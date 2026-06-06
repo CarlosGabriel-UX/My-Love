@@ -64,6 +64,7 @@ export default function ClickSparkles() {
     };
 
     const onPointerOver = (e: PointerEvent) => {
+      if (e.pointerType && e.pointerType !== "mouse") return;
       const now = Date.now();
       if (now - lastHoverRef.current < 220) return;
       const el = (e.target as HTMLElement | null)?.closest?.("button, a");

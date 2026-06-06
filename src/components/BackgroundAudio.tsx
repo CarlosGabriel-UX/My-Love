@@ -51,6 +51,8 @@ export default function BackgroundAudio() {
         a.pause();
         setStatus("paused");
       }
+      audioRef.current = null;
+      tryPlayRef.current = null;
       return;
     }
 
@@ -61,8 +63,10 @@ export default function BackgroundAudio() {
     audioRef.current = audio;
 
     const tryPlay = async () => {
+      const a = audioRef.current;
+      if (!a) return;
       try {
-        await audio.play();
+        await a.play();
         setStatus("playing");
       } catch {
         setStatus("blocked");
@@ -98,7 +102,7 @@ export default function BackgroundAudio() {
       audioRef.current = null;
       tryPlayRef.current = null;
     };
-  }, [enabled, volume]);
+  }, [enabled]);
 
   const toggleEnabled = () => {
     setEnabled((v) => !v);
