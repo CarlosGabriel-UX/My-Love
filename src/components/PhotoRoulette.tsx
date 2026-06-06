@@ -18,6 +18,7 @@ export default function PhotoRoulette() {
   const [modalIndex, setModalIndex] = useState(0);
   const hoverRef = useRef(false);
   const reduceMotionRef = useRef(false);
+  const [narrow, setNarrow] = useState(false);
   const [dragDx, setDragDx] = useState(0);
   const dragWidthRef = useRef(0);
   const dragRafRef = useRef<number | null>(null);
@@ -73,6 +74,14 @@ export default function PhotoRoulette() {
       window.clearInterval(t);
     };
   }, [items.length]);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 639px)");
+    setNarrow(mq.matches);
+    const onMq = (e: MediaQueryListEvent) => setNarrow(e.matches);
+    mq.addEventListener("change", onMq);
+    return () => mq.removeEventListener("change", onMq);
+  }, []);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -231,7 +240,7 @@ export default function PhotoRoulette() {
   };
 
   const pickOffsetItem = (offset: number) => items[mod(index + offset)] ?? null;
-  const coverOffsets = items.length <= 1 ? [0] : items.length === 2 ? [-1, 0] : [-2, -1, 0, 1, 2];
+  const coverOffsets = items.length <= 1 ? [0] : items.length === 2 ? [-1, 0] : narrow ? [-1, 0, 1] : [-2, -1, 0, 1, 2];
   const dragProgress = dragWidthRef.current ? Math.max(-1, Math.min(1, dragDx / dragWidthRef.current)) : 0;
 
   return (
@@ -273,13 +282,13 @@ export default function PhotoRoulette() {
                     if (!it) return null;
                     const offFx = off + dragProgress;
                     const abs = Math.abs(offFx);
-                    const x = offFx * 34;
-                    const rotateY = offFx * -26;
-                    const rotateZ = offFx * -1.2;
-                    const scale = 1 - abs * 0.06;
-                    const z = 170 - abs * 88;
+                    const x = offFx * (narrow ? 26 : 34);
+                    const rotateY = offFx * (narrow ? -18 : -26);
+                    const rotateZ = offFx * (narrow ? -0.8 : -1.2);
+                    const scale = 1 - abs * (narrow ? 0.075 : 0.06);
+                    const z = (narrow ? 120 : 170) - abs * (narrow ? 68 : 88);
                     const opacity = 1 - abs * 0.22;
-                    const blur = abs === 0 ? 0 : abs < 1.3 ? 0.3 : 0.85;
+                    const blur = narrow ? 0 : abs === 0 ? 0 : abs < 1.3 ? 0.3 : 0.85;
                     const zIndex = 20 - Math.round(abs * 2);
                     const shade = Math.min(0.22, abs * 0.12);
                     const dragging = dragRef.current?.moved ?? false;
@@ -300,13 +309,14 @@ export default function PhotoRoulette() {
                           height: "86%",
                           transform: `translate(-50%, -50%) translateX(${x}%) rotateY(${rotateY}deg) rotateZ(${rotateZ}deg) translateZ(${z}px) scale(${scale})`,
                           opacity,
-                          filter: `blur(${blur}px)`,
+                          filter: blur === 0 ? undefined : `blur(${blur}px)`,
                           zIndex,
                           transformStyle: "preserve-3d",
                           backfaceVisibility: "hidden",
+                          willChange: "transform, opacity, filter",
                           transition: dragging
                             ? "none"
-                            : "transform 520ms cubic-bezier(0.2, 0.9, 0.2, 1), opacity 520ms cubic-bezier(0.2, 0.9, 0.2, 1), filter 520ms cubic-bezier(0.2, 0.9, 0.2, 1)",
+                            : "transform 440ms cubic-bezier(0.2, 0.9, 0.2, 1), opacity 440ms cubic-bezier(0.2, 0.9, 0.2, 1), filter 440ms cubic-bezier(0.2, 0.9, 0.2, 1)",
                         }}
                       >
                         <div className="photo-frame relative h-full w-full overflow-hidden">
