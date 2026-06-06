@@ -331,7 +331,10 @@ export default function PhotoRoulette() {
                     );
                   })}
 
-                  <div aria-hidden className="pointer-events-none absolute inset-0 grid grid-cols-3">
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 grid grid-cols-[1fr_1.6fr_1fr] sm:grid-cols-3"
+                  >
                     <button
                       type="button"
                       aria-label="Voltar"
@@ -399,7 +402,10 @@ export default function PhotoRoulette() {
             >
               <img src={items[mod(modalIndex)]?.src ?? ""} alt="" className="h-auto w-full select-none" draggable={false} />
             </div>
-            <div aria-hidden className="pointer-events-none absolute inset-0 grid grid-cols-3">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 grid grid-cols-[1fr_1.6fr_1fr] sm:grid-cols-3"
+            >
               <button
                 type="button"
                 aria-label="Voltar"
