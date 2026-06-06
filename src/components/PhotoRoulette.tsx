@@ -355,10 +355,15 @@ export default function PhotoRoulette() {
               </div>
 
               <div className="mt-4 flex items-center justify-between gap-3">
-                <button type="button" onClick={prev} aria-label="Voltar" className="btn-love-ghost h-10 w-10 p-0">
+                <button
+                  type="button"
+                  onClick={prev}
+                  aria-label="Voltar"
+                  className="btn-love-ghost h-10 w-10 shrink-0 p-0"
+                >
                   <ChevronLeft className="h-4 w-4" />
                 </button>
-                <div className="flex items-center gap-2 overflow-x-auto py-1">
+                <div className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto py-1">
                   {items.map((it, i) => (
                     <button
                       key={it.id}
@@ -374,7 +379,12 @@ export default function PhotoRoulette() {
                     </button>
                   ))}
                 </div>
-                <button type="button" onClick={next} aria-label="Próxima" className="btn-love-primary h-10 w-10 p-0">
+                <button
+                  type="button"
+                  onClick={next}
+                  aria-label="Próxima"
+                  className="btn-love-primary h-10 w-10 shrink-0 p-0"
+                >
                   <ChevronRight className="h-4 w-4" />
                 </button>
               </div>
