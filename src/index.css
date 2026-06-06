@@ -178,6 +178,18 @@ button,
   border-radius: 22px;
 }
 
+@media (max-width: 639px) {
+  .photo-frame {
+    border-radius: 24px;
+    padding: 8px 8px 12px;
+  }
+
+  .photo-frame img {
+    border-radius: 18px;
+    image-orientation: from-image;
+  }
+}
+
 .mosaic-grid {
   filter: blur(2.2px) saturate(1.08) contrast(1.02) brightness(1.04);
   transform: translate3d(0, 0, 0);

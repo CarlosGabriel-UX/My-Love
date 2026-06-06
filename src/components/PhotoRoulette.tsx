@@ -267,7 +267,7 @@ export default function PhotoRoulette() {
                   "relative aspect-[4/5] overflow-hidden rounded-[2.4rem] border border-pink-200/70 bg-white",
                   "shadow-[0_30px_120px_rgba(236,72,153,0.22)]",
                 )}
-                style={{ perspective: "1100px" }}
+                style={{ perspective: narrow ? "900px" : "1100px" }}
               >
                 <div
                   className="absolute inset-0"
@@ -282,11 +282,11 @@ export default function PhotoRoulette() {
                     if (!it) return null;
                     const offFx = off + dragProgress;
                     const abs = Math.abs(offFx);
-                    const x = offFx * (narrow ? 26 : 34);
+                    const x = offFx * (narrow ? 22 : 34);
                     const rotateY = offFx * (narrow ? -18 : -26);
-                    const rotateZ = offFx * (narrow ? -0.8 : -1.2);
+                    const rotateZ = offFx * (narrow ? 0 : -1.2);
                     const scale = 1 - abs * (narrow ? 0.075 : 0.06);
-                    const z = (narrow ? 120 : 170) - abs * (narrow ? 68 : 88);
+                    const z = (narrow ? 96 : 170) - abs * (narrow ? 54 : 88);
                     const opacity = 1 - abs * 0.22;
                     const blur = narrow ? 0 : abs === 0 ? 0 : abs < 1.3 ? 0.3 : 0.85;
                     const zIndex = 20 - Math.round(abs * 2);
@@ -364,7 +364,7 @@ export default function PhotoRoulette() {
                 <div className="pointer-events-none absolute inset-0 rounded-[2.4rem] ring-1 ring-pink-300/40" />
               </div>
 
-              <div className="mt-4 flex items-center justify-between gap-3">
+                <div className="mt-4 flex items-center justify-between gap-2 sm:gap-3">
                 <button
                   type="button"
                   onClick={prev}
@@ -381,7 +381,7 @@ export default function PhotoRoulette() {
                       onClick={() => setIndex(i)}
                       aria-label={`Foto ${i + 1}`}
                       className={cn(
-                        "relative h-10 w-10 shrink-0 overflow-hidden rounded-2xl border bg-white shadow-[0_12px_40px_rgba(236,72,153,0.12)] transition",
+                          "relative h-9 w-9 shrink-0 overflow-hidden rounded-2xl border bg-white shadow-[0_12px_40px_rgba(236,72,153,0.12)] transition sm:h-10 sm:w-10",
                         i === index ? "border-pink-300 ring-2 ring-pink-300/40" : "border-pink-200/70",
                       )}
                     >
